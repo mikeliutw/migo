@@ -54,7 +54,6 @@
                 active-color="#08AA5E"
                 inactive-color="#B2B2B2"
                 :active-text="scope.row.text"
-
               >
               </el-switch>
             </template>
@@ -3934,21 +3933,21 @@ export default {
       return time;
     },
     load(tree, treeNode, resolve) {
-      // console.log(tree.seasons);
-      // console.log(treeNode);
+            console.log(tree);
 
-      setTimeout(() => {
+      if (tree.seasons != null) {
         resolve(tree.seasons);
-      }, 200);
+      } else {
+        resolve(tree.episodes);
+      }
     },
   },
   mounted() {
-   // console.log(this.tableData1.length);
+    // console.log(this.tableData1.length);
     for (var i = 0; i < this.tableData1.length; i++) {
       let row = this.tableData1[i];
       row.text = "Single Movie";
 
-    
       row.switch = false;
       row.publish_timestamp = this.timeConverter(row.publish_timestamp);
 
@@ -3957,10 +3956,35 @@ export default {
       if (row.seasons != null && row.seasons.length > 0) {
         row.seasons_count = row.seasons.length;
         row.hasChildren = true;
+        row.text = "All Season";
+        for (var j = 0; j < row.seasons.length; j++) {
+          var seasonitem = row.seasons[j];
+          seasonitem.title_id = row.title_id + "_" + j;
+          var x = j + 1;
 
-        for(var j=0;j<row.seasons.length;j++){
-          var seasonitem=row.seasons[j];
-          seasonitem.title_id=row.title_id+"_"+j;
+          seasonitem.title_id = row.title_id + "_" + j;
+          seasonitem.text = "All Episode";
+          seasonitem.content_type = "Season";
+          seasonitem.title_name = "Season " + x;
+          seasonitem.seasons_count = "S" + x;
+
+          if (seasonitem.episodes != null && seasonitem.episodes.length > 0) {
+            seasonitem.hasChildren = true;
+
+            for (var k = 0; k < seasonitem.episodes.length; k++) {
+              var episodesitem = seasonitem.episodes[k];
+            //  console.log(episodesitem);
+              var y = k + 1;
+              episodesitem.title_id = row.title_id + "_" + j + "_" + k;
+
+              episodesitem.hasChildren = false;
+              episodesitem.title_id = row.title_id + "_" + y;
+              episodesitem.text = "Per Episode";
+              episodesitem.content_type = "Episode";
+              episodesitem.title_name = "Episode " + y;
+              episodesitem.seasons_count = "EP" + y;
+            }
+          }
         }
       }
     }
@@ -3999,15 +4023,16 @@ header {
   background: rgba(32, 32, 32, 0.05);
 }
 
-.el-table thead{
- color: black !important;
+.el-table thead {
+  color: black !important;
 }
 
-.el-table th.el-table__cell{
+.el-table th.el-table__cell {
   background: rgba(32, 32, 32, 0.05) !important;
 }
 
-.el-table--border .el-table__cell, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed{
+.el-table--border .el-table__cell,
+.el-table__body-wrapper .el-table--border.is-scrolling-left ~ .el-table__fixed {
   border-right: 0px !important;
 }
 </style>
